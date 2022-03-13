@@ -118,6 +118,41 @@ router.delete('/:id', (req, res) => {
 
 });
 
+
+// POST ROUTE TO VERIFY USER IDENTITY BASED ON USERNAME AND EMAIL , this route will be http://localhost:3001/api/users/login
+router.post('/login', (req, res) => {
+    // expects {email: 'lernantino@gmail.com', password: 'password1234'}
+
+    // 1) queried the User table using the findOne() method for the email entered by the user and assigned it to req.body.email.
+    User.findOne({
+        where: {
+          email: req.body.email
+        }
+    })
+    .then(dbUserData => {
+        // 2) If the user with that email was not found, a message is sent back as a response to the client. 
+        if (!dbUserData) {
+            res.status(400).json({ message: 'No user with that email address!' });
+        return;
+        }
+        // 3) However, if the email was found in the database, the next step will be to verify the user's identity by matching the password from the user and the hashed password in the database.
+        
+
+        // Verify user - the dbuserdata from the findOne query is used with the checkpassword instance method wich has a param of the supplied password and returns to const validPassword a boolean for a comparison if statement
+        const validPassword = dbUserData.checkPassword(req.body.password);
+        if (!validPassword) {
+            res.status(400).json({ message: 'Incorrect password!' });
+            return;
+        }
+
+        res.json({ user: dbUserData, message: 'You are now logged in!' });
+
+    })
+  
+})
+
+
+
 module.exports = router;
 
 
