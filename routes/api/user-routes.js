@@ -74,6 +74,10 @@ router.put('/:id', (req, res) => {
     //   We pass in req.body to provide the new data we want to use in the update and req.params.id to indicate where exactly we want that new data to be used.
     //   Also, if req.body has exact key/value pairs to match the model, you can just use `req.body` instead
     User.update(req.body, {
+
+        //Needed to be able to use bycrypt hook... passed in req.body instead to only update what's passed through
+        individualHooks: true,
+    
         where: {
           id: req.params.id
         }
